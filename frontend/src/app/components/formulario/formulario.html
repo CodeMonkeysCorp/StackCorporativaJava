@@ -1,0 +1,8 @@
+<h2>Formulário</h2>
+
+<form (submit)="salvar(); $event.preventDefault()">
+  <label>Nome:</label>
+  <input type="text" [(ngModel)]="nome" name="nome">
+
+  <button type="submit">Salvar</button>
+</form>
