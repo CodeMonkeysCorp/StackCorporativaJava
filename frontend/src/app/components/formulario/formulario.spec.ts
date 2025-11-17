@@ -1,23 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { FormularioComponent } from './formulario.component';
 
-import { Formulario } from './formulario';
-
-describe('Formulario', () => {
-  let component: Formulario;
-  let fixture: ComponentFixture<Formulario>;
+describe('FormularioComponent', () => {
+  let component: FormularioComponent;
+  let fixture: ComponentFixture<FormularioComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Formulario]
-    })
-    .compileComponents();
+      imports: [FormsModule],
+      declarations: [FormularioComponent]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(Formulario);
+    fixture = TestBed.createComponent(FormularioComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('deve criar o componente', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('deve iniciar com nome vazio', () => {
+    expect(component.nome).toBe('');
+  });
+
+  it('deve chamar salvar() sem erros', () => {
+    expect(() => component.salvar()).not.toThrow();
   });
 });
