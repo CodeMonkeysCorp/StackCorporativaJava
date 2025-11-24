@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { LoginRequest, LoginResponse, RegisterRequest, AuthResponse } from './auth.models';
+import { LoginRequest, LoginResponse, RegisterRequest, AuthResponse, JwtPayload, CurrentUser } from './auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import { LoginRequest, LoginResponse, RegisterRequest, AuthResponse } from './au
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private tokenKey = 'authToken';
-  private currentUserSubject = new BehaviorSubject<any>(this.getUserFromStorage());
+  private currentUserSubject = new BehaviorSubject<CurrentUser | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -52,7 +52,7 @@ export class AuthService {
   /**
    * Get current user from storage
    */
-  private getUserFromStorage(): any {
+  private getUserFromStorage(): CurrentUser | null {
     const token = this.getToken();
     if (token) {
       try {
@@ -83,7 +83,7 @@ export class AuthService {
   /**
    * Parse JWT token
    */
-  private parseJwt(token: string): any {
+  private parseJwt(token: string): JwtPayload {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(
@@ -92,7 +92,7 @@ export class AuthService {
         .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')
     );
-    return JSON.parse(jsonPayload);
+    return JSON.parse(jsonPayload) as JwtPayload;
   }
 
   /**

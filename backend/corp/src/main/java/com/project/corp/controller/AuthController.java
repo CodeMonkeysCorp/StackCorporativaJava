@@ -13,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,16 +23,18 @@ public class AuthController {
     private final JwtProvider jwtProvider;
     private final UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, UserService userService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtProvider jwtProvider,
+            UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
         this.userService = userService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
-            User user = userService.register(request.getName(), request.getUsername(), request.getEmail(), request.getPassword());
+            User user = userService.register(request.getName(), request.getUsername(), request.getEmail(),
+                    request.getPassword());
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -39,11 +42,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
             User user = userService.findByUsername(request.getUsername())
                     .orElseThrow(() -> new BadCredentialsException("User not found"));
