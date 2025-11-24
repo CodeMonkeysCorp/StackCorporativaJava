@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-formulario',
-  templateUrl: './formulario.component.html',
-  styleUrls: ['./formulario.component.css']
+  templateUrl: './formulario.html',
+  styleUrls: ['./formulario.css']
 })
 export class FormularioComponent {
   nome: string = '';

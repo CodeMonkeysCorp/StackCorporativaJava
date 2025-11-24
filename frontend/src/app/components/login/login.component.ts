@@ -1,5 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, inject } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -12,17 +17,17 @@ import { LoginRequest } from '../../services/auth.models';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  loginForm: FormGroup;
+  loginForm!: FormGroup;
   submitted = false;
   loading = false;
   errorMessage = '';
 
-  constructor() {
+  ngOnInit(): void {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -49,12 +54,12 @@ export class LoginComponent {
     };
 
     this.authService.login(loginRequest).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.loading = false;
         // Redirect to dashboard or home
         this.router.navigate(['/dashboard']);
       },
-      error: (error) => {
+      error: (error: any) => {
         this.loading = false;
         this.errorMessage = error.message || 'Login failed. Please check your credentials.';
         console.error('Login error:', error);

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-lista',
-  templateUrl: './lista.component.html',
-  styleUrls: ['./lista.component.css']
+  templateUrl: './lista.html',
+  styleUrls: ['./lista.css']
 })
 export class ListaComponent {
   itens = [
