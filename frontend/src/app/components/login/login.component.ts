@@ -8,7 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
-import { LoginRequest } from '../../services/auth.models';
+import { LoginRequest, LoginResponse } from '../../services/auth.models';
 
 @Component({
   selector: 'app-login',
@@ -54,12 +54,12 @@ export class LoginComponent implements OnInit {
     };
 
     this.authService.login(loginRequest).subscribe({
-      next: (response: any) => {
+      next: (response: LoginResponse) => {
         this.loading = false;
         // Redirect to dashboard or home
         this.router.navigate(['/dashboard']);
       },
-      error: (error: any) => {
+      error: (error: Error) => {
         this.loading = false;
         this.errorMessage = error.message || 'Login failed. Please check your credentials.';
         console.error('Login error:', error);

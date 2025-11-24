@@ -28,9 +28,13 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          // Token expired or invalid
-          this.authService.logout();
-          window.location.href = '/login';
+          // Token expired or invalid - only redirect if not already on login page
+          const currentPath = window.location.pathname;
+          if (!currentPath.includes('/login')) {
+            this.authService.logout();
+            // Use replace to avoid adding to history
+            window.location.replace('/login');
+          }
         }
         return throwError(() => error);
       })
