@@ -1,7 +1,9 @@
 <h2>Lista de Itens</h2>
 
 <ul>
-  <li *ngFor="let item of itens">
-    {{ item.id }} - {{ item.nome }}
-  </li>
+  @for (item of itens; track item.id) {
+    <li>
+      {{ item.id }} - {{ item.nome }}
+    </li>
+  }
 </ul>
