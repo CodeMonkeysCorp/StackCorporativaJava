@@ -2,12 +2,12 @@ package com.project.corp.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
 
 @Component
@@ -21,42 +21,43 @@ public class JwtProvider {
 
     public String generateToken(String username, String role) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        Instant now = Instant.now();
         return Jwts.builder()
-                .setSubject(username)
+                .subject(username)
                 .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(key, SignatureAlgorithm.HS512)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusMillis(jwtExpiration)))
+                .signWith(key)
                 .compact();
     }
 
     public String getUsername(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
     }
 
     public String getRole(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
+        Claims claims = Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
         return (String) claims.get("role");
     }
 
     public boolean validateToken(String token) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
+            Jwts.parser()
+                    .verifyWith(key)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
             return false;

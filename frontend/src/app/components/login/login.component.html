@@ -12,9 +12,11 @@
           placeholder="Enter username"
           [class.is-invalid]="submitted && f['username'].errors"
         />
-        <div *ngIf="submitted && f['username'].errors" class="error-message">
-          Username is required
-        </div>
+        @if (submitted && f['username'].errors) {
+          <div class="error-message">
+            Username is required
+          </div>
+        }
       </div>
 
       <div class="form-group">
@@ -26,17 +28,23 @@
           placeholder="Enter password"
           [class.is-invalid]="submitted && f['password'].errors"
         />
-        <div *ngIf="submitted && f['password'].errors" class="error-message">
-          <div *ngIf="f['password'].errors?.['required']">Password is required</div>
-          <div *ngIf="f['password'].errors?.['minlength']">
-            Password must be at least 6 characters
+        @if (submitted && f['password'].errors) {
+          <div class="error-message">
+            @if (f['password'].errors?.['required']) {
+              <div>Password is required</div>
+            }
+            @if (f['password'].errors?.['minlength']) {
+              <div>Password must be at least 6 characters</div>
+            }
           </div>
-        </div>
+        }
       </div>
 
-      <div *ngIf="errorMessage" class="error-banner">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="error-banner">
+          {{ errorMessage }}
+        </div>
+      }
 
       <button type="submit" [disabled]="loading">
         {{ loading ? 'Logging in...' : 'Login' }}

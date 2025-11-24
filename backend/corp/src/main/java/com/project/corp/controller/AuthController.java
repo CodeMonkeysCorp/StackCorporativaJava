@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -33,7 +32,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
-            User user = userService.register(request.getName(), request.getUsername(), request.getEmail(),
+            userService.register(request.getName(), request.getUsername(), request.getEmail(),
                     request.getPassword());
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (IllegalArgumentException e) {
@@ -44,12 +43,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
+            // Authenticate user credentials
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
+            // Get user details after successful authentication
             User user = userService.findByUsername(request.getUsername())
                     .orElseThrow(() -> new BadCredentialsException("User not found"));
 
+            // Generate JWT token
             String token = jwtProvider.generateToken(user.getUsername(), user.getRole());
             return ResponseEntity.ok(new LoginResponse(token, user.getUsername(), user.getRole()));
         } catch (BadCredentialsException e) {
